@@ -1,0 +1,50 @@
+{
+  "name": "probot-workflow",
+  "version": "1.0.0",
+  "description": "workflow automation via `.probot.js` file in your repository",
+  "author": "Brandon Keepers",
+  "repository": "https://github.com/probot/workflow",
+  "scripts": {
+    "start": "probot ./index.js",
+    "test": "mocha && xo"
+  },
+  "dependencies": {
+    "handlebars": "^4.0.6",
+    "probot": "probot/probot#wild-wild-west"
+  },
+  "engines": {
+    "node": ">= 7.7.0",
+    "npm": ">= 4.0.0"
+  },
+  "devDependencies": {
+    "expect": "^1.20.2",
+    "mocha": "^3.2.0",
+    "xo": "^0.17.1"
+  },
+  "xo": {
+    "esnext": true,
+    "space": true,
+    "rules": {
+      "camelcase": 1,
+      "no-else-return": 0,
+      "key-spacing": 0
+    },
+    "envs": [
+      "node",
+      "mocha"
+    ],
+    "globals": [
+      "on",
+      "include",
+      "contents"
+    ],
+    "overrides": [
+      {
+        "files": "test/**/*.js",
+        "rules": {
+          "max-nested-callbacks": "off"
+        }
+      }
+    ]
+  }
+}
