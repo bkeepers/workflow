@@ -17,7 +17,7 @@ _**Heads up!** The [demo integration](https://github.com/integration/probot-demo
           [config]: https://github.com/bkeepers/PRobot/blob/master/docs/configuration.md
         `);
 
-        include("bkeepers/probot:docs/demo.js");
+        include("probot/workflow:docs/demo.js");
 
 0. Open a new issue. @probot should post a comment (you may need to refresh to see it).
 
