@@ -5,12 +5,12 @@
   "author": "Brandon Keepers",
   "repository": "https://github.com/probot/workflow",
   "scripts": {
-    "start": "probot ./index.js",
+    "start": "probot run ./index.js",
     "test": "mocha && xo"
   },
   "dependencies": {
     "handlebars": "^4.0.6",
-    "probot": "probot/probot#wild-wild-west"
+    "probot": "~0.2.0"
   },
   "engines": {
     "node": ">= 7.7.0",
