@@ -107,3 +107,10 @@ on('issues.opened', 'pull_request.opened', 'issues.labeled', 'pull_request.label
   .filter.labeled('security')
   .assign(team('security-first-responders').random());
 ```
+
+### Create a new project card in a project when an Issue is created
+
+```js
+on('issues.opened')
+  .createCard({project:'myProject', column:'myColumn'});
+```
