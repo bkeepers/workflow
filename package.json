@@ -44,6 +44,12 @@
         "rules": {
           "max-nested-callbacks": "off"
         }
+      },
+      {
+        "files": "lib/plugins/projects.js",
+        "rules": {
+          "camelcase": "off"
+        }
       }
     ]
   }
