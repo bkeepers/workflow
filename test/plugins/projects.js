@@ -24,7 +24,9 @@ describe('projects plugin', () => {
   describe('createCard', () => {
     it('creates a project card', () => {
       this.projects.createCard(context, {project:'myProject', column:'New'}).then(() => {
-        expect(github.issues.create).toHaveBeenCalled({
+        expect(github.projects.getRepoProjects).toHaveBeenCalledWith({
+          owner: 'pholleran',
+          repo: 'test'
         });
       });
     });
