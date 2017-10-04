@@ -1,13 +1,12 @@
 const expect = require('expect');
 const Filter = require('../../lib/plugins/filter');
+const HaltedError = require('../../lib/errors/halted');
 
 const createSpy = expect.createSpy;
 
-describe('filter plugin', () => {
-  const event = {};
+describe('plugins/Filter', () => {
   const context = {
-    event,
-    halt: createSpy().andReturn(Promise.reject(new Error('halted')))
+    event: {}
   };
 
   let filter;
@@ -18,46 +17,39 @@ describe('filter plugin', () => {
 
   describe('filter', () => {
     it('passes the event and context objects to the supplied function', () => {
-      const fn = createSpy();
-      filter.filter(context, fn);
+      const fn = createSpy().andReturn(true);
+      Filter.filter(context, fn);
 
-      expect(fn).toHaveBeenCalledWith(event, context);
+      expect(fn).toHaveBeenCalledWith(context);
     });
 
     it('returns true if the function does', () => {
       const fn = createSpy().andReturn(true);
 
-      expect(filter.filter(context, fn)).toBe(true);
+      expect(Filter.filter(context, fn)).toBe(true);
     });
 
     it('returns a rejected promise if the function returns false', () => {
       const fn = createSpy().andReturn(false);
 
-      return filter.filter(context, fn).catch(err => {
-        expect(err.message).toEqual('halted');
+      return Filter.filter(context, fn).catch(err => {
+        expect(err).toBeA(HaltedError);
       });
     });
   });
 
   describe('then', () => {
-    it('passes the event and context objects to the supplied function', () => {
-      const fn = createSpy();
-      filter.filter(context, fn);
-
-      expect(fn).toHaveBeenCalledWith(event, context);
-    });
-
     it('returns whatever the function does', () => {
       const fn = createSpy().andReturn('bazinga!');
 
-      expect(filter.then(context, fn)).toBe('bazinga!');
+      expect(Filter.then(context, fn)).toBe('bazinga!');
     });
   });
 
   describe('on', () => {
     describe('matching only the event name', () => {
       it('matches on a single event', () => {
-        event.event = 'issues';
+        context.event = 'issues';
 
         return filter.on(context, 'issues').then(result => {
           expect(result).toEqual('issues');
@@ -65,15 +57,15 @@ describe('filter plugin', () => {
       });
 
       it('fails to match on a single event', () => {
-        event.event = 'issues';
+        context.event = 'issues';
 
         return filter.on(context, 'foo').catch(err => {
-          expect(err.message).toBe('halted');
+          expect(err).toBeA(HaltedError);
         });
       });
 
       it('matches any of the event names', () => {
-        event.event = 'foo';
+        context.event = 'foo';
 
         return filter.on(context, 'issues', 'foo').then(result => {
           expect(result).toEqual('foo');
@@ -81,18 +73,18 @@ describe('filter plugin', () => {
       });
 
       it('fails to match if none of the event names match', () => {
-        event.event = 'bar';
+        context.event = 'bar';
 
         return filter.on(context, 'issues', 'foo').catch(err => {
-          expect(err.message).toBe('halted');
+          expect(err).toBeA(HaltedError);
         });
       });
     });
 
     describe('matching the event and action', () => {
       it('matches on a single event', () => {
-        event.event = 'issues';
-        event.payload = {action: 'opened'};
+        context.event = 'issues';
+        context.payload = {action: 'opened'};
 
         return filter.on(context, 'issues.opened').then(result => {
           expect(result).toBe('issues.opened');
@@ -100,17 +92,17 @@ describe('filter plugin', () => {
       });
 
       it('fails to match on a single event', () => {
-        event.event = 'issues';
-        event.payload = {action: 'foo'};
+        context.event = 'issues';
+        context.payload = {action: 'foo'};
 
         return filter.on(context, 'issues.opened').catch(err => {
-          expect(err.message).toBe('halted');
+          expect(err).toBeA(HaltedError);
         });
       });
 
       it('matches any of the event descriptors', () => {
-        event.event = 'issues';
-        event.payload = {action: 'closed'};
+        context.event = 'issues';
+        context.payload = {action: 'closed'};
 
         return filter.on(context, 'issues.opened', 'issues.closed').then(result => {
           expect(result).toBe('issues.closed');
@@ -118,11 +110,11 @@ describe('filter plugin', () => {
       });
 
       it('fails to match if none of the event descriptors match', () => {
-        event.event = 'issues';
-        event.payload = {action: 'foo'};
+        context.event = 'issues';
+        context.payload = {action: 'foo'};
 
         return filter.on(context, 'issues.opened', 'issues.closed').catch(err => {
-          expect(err.message).toBe('halted');
+          expect(err).toBeA(HaltedError);
         });
       });
     });
