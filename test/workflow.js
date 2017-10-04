@@ -35,7 +35,7 @@ describe('Workflow', () => {
 
   describe('construction', () => {
     it('adds the plugins distinctiveness to its own', () => {
-      expect(workflow.api.test).toExist();
+      expect(workflow.api).toHaveProperty('test');
     });
 
     it('returns a reference to the API for chaining when the test function is called', () => {
@@ -95,8 +95,8 @@ describe('Workflow', () => {
         throw new Error('Should not happen');
       }, err => {
         expect(err.message).toBe('HALT AND CATCH FIRE!!!');
-        expect(context.bar).toBe('baz');
-        expect(context.baz).toNotExist();
+        expect(context).toHaveProperty('bar', 'baz');
+        expect(context).not.toHaveProperty('baz');
       });
     });
 
@@ -107,8 +107,8 @@ describe('Workflow', () => {
         throw new Error('Should not happen');
       }, err => {
         expect(err.message).toBe('Nothing to see here, move along');
-        expect(context.bar).toBe('baz');
-        expect(context.baz).toNotExist();
+        expect(context).toHaveProperty('bar', 'baz');
+        expect(context).not.toHaveProperty('baz');
       });
     });
   });
