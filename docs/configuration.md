@@ -4,7 +4,7 @@ Workflows are configured in a file called `.github/.probot.js` in your repositor
 
 ```js
 // Auto-respond to new issues and pull requests
-on(['issues.opened', 'pull_request.opened'])
+on('issues.opened', 'pull_request.opened')
   .comment('Thanks for your contribution! Expect a reply within 48 hours.')
   .label('triage');
 
@@ -35,7 +35,7 @@ on('issues')
 You can also specify multiple events to trigger this behavior:
 
 ```js
-on(['issues', 'pull_request'])
+on('issues', 'pull_request')
 ```
 
 Many events also have an `action` (e.g. `created` for the `issue` event), which can be referenced with dot notation:
@@ -147,7 +147,7 @@ The `body` of the issue can be generated from the contents of a template file wi
 ```js
 .createIssue({
   title: 'Issue Title',
-  body: contents('.github/NEW_ISSUE_TEMPLATE.md'),
+  body: contents('NEW_ISSUE_TEMPLATE.md'),
   assignees: ['bkeepers'],
   labels: ['question']
 });
@@ -158,14 +158,19 @@ The `body` of the issue can be generated from the contents of a template file wi
 Loads a configuration from another file.
 
 ```js
-include('.github/bot/issues.js');
-include('.github/bot/releases.js');
+include('bot/issues.js');
+include('bot/releases.js');
 ```
 
 You can also include configuration from another repository.
 
 ```js
-include('user/repo:path.js#branch');
+include({
+ owner: 'user',
+ repo: 'repo',
+ branch: 'branch',
+ path: 'path.js'
+});
 ```
 
 ## contents
@@ -173,12 +178,18 @@ include('user/repo:path.js#branch');
 Retrieves the contents of the repository and passes them to any plugin method.
 
 ```js
-on('issues.opened').comment(contents('.github/NEW_ISSUE_TEMPLATE.md'));
+on('issues.opened')
+  .comment(contents('NEW_ISSUE_TEMPLATE.md'));
 ```
 This also supports fetching contents from another repository
 
 ```js
-on('issues.opened').comment(contents('atom/configs:.github/NEW_ISSUE_TEMPLATE.md'));
+on('issues.opened')
+  .comment(contents({
+    owner: 'atom',
+    repo: 'config',
+    path: '.github/NEW_ISSUE_TEMPLATE.md'
+  }));
 ```
 
 ---

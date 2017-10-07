@@ -15,14 +15,15 @@ describe('Probot', () => {
         getContent: expect.createSpy().andReturn(Promise.resolve({
           data: {
             content: Buffer.from(`
-              on("issue_comment.created")
-                .comment("Hello World!");
+              on('issue_comment.created')
+                .comment('Hello World!');
             `).toString('base64')
           }
         }))
       },
       issues: {
-        createComment: expect.createSpy()
+        createComment: expect.createSpy(),
+        edit: expect.createSpy()
       }
     };
 
@@ -38,4 +39,41 @@ describe('Probot', () => {
       expect(github.issues.createComment).toHaveBeenCalled();
     });
   });
+
+  // describe('on an event with a different action', () => {
+  //   it('does not perform behavior', async () => {
+  //     const payload = require('./fixtures/webhook/issue.created');
+  //
+  //     await robot.receive({event: 'issues', payload});
+  //
+  //     expect(github.issues.createComment).toNotHaveBeenCalled();
+  //   });
+  // });
+  //
+  // describe('filter', () => {
+  //   it('calls action when condition matches', async () => {
+  //     const payload = require('./fixtures/webhook/issues.labeled');
+  //
+  //     await robot.receive({event: 'issues', payload});
+  //
+  //     expect(github.issues.edit).toHaveBeenCalled();
+  //   });
+  //
+  //   it('does not call action when conditions do not match', async () => {
+  //     github.repos.getContent.andReturn(Promise.resolve({
+  //       data: {
+  //         content: Buffer.from(`
+  //           on('issues.labeled')
+  //             .filter(context => context.payload.label.name == 'foobar')
+  //             .close()
+  //         `).toString('base64')
+  //       }
+  //     }));
+  //     const payload = require('./fixtures/webhook/issues.labeled');
+  //
+  //     await robot.receive({event: 'issues', payload});
+  //
+  //     expect(github.issues.edit).toNotHaveBeenCalled();
+  //   });
+  // });
 });

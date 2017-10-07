@@ -48,5 +48,34 @@ describe('Configuration', () => {
     it('returns undefined', () => {
       expect(config.include('foo.js')).toBe(undefined);
     });
+
+    it('includes from another repository', () => {
+      config.include({
+        owner: 'atom',
+        repo: 'configs',
+        path: 'foo.js',
+        ref: 'branch'
+      });
+      expect(context.github.repos.getContent).toHaveBeenCalled();
+      expect(context.repo).toHaveBeenCalledWith({
+        owner: 'atom',
+        repo: 'configs',
+        path: 'foo.js',
+        ref: 'branch'
+      });
+    });
+
+    it('includes config from another repository', () => {
+      config.include({
+        owner: 'atom',
+        repo: 'configs'
+      });
+      expect(context.github.repos.getContent).toHaveBeenCalled();
+      expect(context.repo).toHaveBeenCalledWith({
+        owner: 'atom',
+        repo: 'configs',
+        path: path.join('.github', '.probot.js')
+      });
+    });
   });
 });

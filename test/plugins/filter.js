@@ -18,7 +18,7 @@ describe('plugins/Filter', () => {
   describe('filter', () => {
     it('passes the event and context objects to the supplied function', () => {
       const fn = createSpy().andReturn(true);
-      Filter.filter(context, fn);
+      filter.filter(context, fn);
 
       expect(fn).toHaveBeenCalledWith(context);
     });
@@ -26,13 +26,13 @@ describe('plugins/Filter', () => {
     it('returns true if the function does', () => {
       const fn = createSpy().andReturn(true);
 
-      expect(Filter.filter(context, fn)).toBe(true);
+      expect(filter.filter(context, fn)).toBe(true);
     });
 
     it('returns a rejected promise if the function returns false', () => {
       const fn = createSpy().andReturn(false);
 
-      return Filter.filter(context, fn).catch(err => {
+      return filter.filter(context, fn).catch(err => {
         expect(err).toBeA(HaltedError);
       });
     });
@@ -42,7 +42,7 @@ describe('plugins/Filter', () => {
     it('returns whatever the function does', () => {
       const fn = createSpy().andReturn('bazinga!');
 
-      expect(Filter.then(context, fn)).toBe('bazinga!');
+      expect(filter.then(context, fn)).toBe('bazinga!');
     });
   });
 
