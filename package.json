@@ -2,6 +2,7 @@
   "name": "probot-workflow",
   "version": "1.0.0",
   "description": "workflow automation via `.probot.js` file in your repository",
+  "license": "ISC",
   "author": "Brandon Keepers",
   "repository": "https://github.com/probot/workflow",
   "scripts": {
@@ -10,7 +11,7 @@
   },
   "dependencies": {
     "handlebars": "^4.0.6",
-    "probot": "~0.2.0"
+    "probot": "^0.11.0"
   },
   "engines": {
     "node": ">= 7.7.0",
@@ -18,17 +19,13 @@
   },
   "devDependencies": {
     "expect": "^1.20.2",
-    "mocha": "^3.2.0",
-    "xo": "^0.17.1"
+    "localtunnel": "^1.8.2",
+    "mocha": "^4.0.0",
+    "xo": "^0.18.2"
   },
   "xo": {
     "esnext": true,
     "space": true,
-    "rules": {
-      "camelcase": 1,
-      "no-else-return": 0,
-      "key-spacing": 0
-    },
     "envs": [
       "node",
       "mocha"

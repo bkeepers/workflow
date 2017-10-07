@@ -1,30 +1,31 @@
 const expect = require('expect');
 const Projects = require('../../lib/plugins/projects');
-const Context = require('../../lib/context');
-const payload = require('../fixtures/webhook/issue.created.json');
+const payload = require('../fixtures/webhook/issue.created');
+const projects = require('../fixtures/projects');
 
 const createSpy = expect.createSpy;
 
-describe('projects plugin', () => {
+describe('plugins/Projects', () => {
   let context;
-  let github;
 
-  before(() => {
-    github = {
-      projects: {
-        createProjectCard: createSpy(),
-        getProjectColumns: createSpy(),
-        getRepoProjects: createSpy()
+  beforeEach(() => {
+    context = {
+      payload,
+      github: {
+        projects: {
+          createProjectCard: createSpy(),
+          getProjectColumns: createSpy().andReturn(Promise.resolve([projects])),
+          getRepoProjects: createSpy().andReturn(Promise.resolve([projects]))
+        }
       }
     };
-    context = new Context(github, {payload});
     this.projects = new Projects();
   });
 
   describe('createCard', () => {
     it('creates a project card', () => {
-      this.projects.createCard(context, {project:'myProject', column:'New'}).then(() => {
-        expect(github.projects.getRepoProjects).toHaveBeenCalledWith({
+      this.projects.createCard(context, {project: 'myProject', column: 'myProject'}).then(() => {
+        expect(context.github.projects.getRepoProjects).toHaveBeenCalledWith({
           owner: 'pholleran',
           repo: 'test'
         });

@@ -1,4 +1,6 @@
 node_modules
 npm-debug.log
-.env
-private-key.pem
+*.pem
+.env*
+!.env.example
+now.json
