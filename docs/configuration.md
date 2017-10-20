@@ -140,7 +140,7 @@ Create a new issue defined as a JSON Object. The `title` and `body` fields are r
 .createIssue({
   title: 'Issue Title',
   body: 'Issue Body',
-  assignees: ['bkeepers']
+  assignees: ['bkeepers'],
   labels: ['question']
 });
 ```
