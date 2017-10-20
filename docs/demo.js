@@ -9,10 +9,10 @@ function isDeleted(event) {
   event.payload.sender.type !== 'Bot';
 }
 
-// restore deleted comments but the one deleted by PRobot
+// Restore deleted comments but the one deleted by PRobot
 on('issue_comment', 'commit_comment', 'pull_request_review_comment')
-.filter(isDeleted)
-.comment(`
+  .filter(isDeleted)
+  .comment(`
 Deleted comment from @{{ comment.user.login }} at {{ comment.updated_at }}
 ---
 {{ comment.body }}
