@@ -1,5 +1,5 @@
-const expect = require('expect');
-const url = require('../../lib/util/github-url');
+const expect = require('expect')
+const url = require('../../lib/util/github-url')
 
 describe('github-url', () => {
   const cases = {
@@ -8,11 +8,11 @@ describe('github-url', () => {
     'owner/repo:path/to/file.js': {owner: 'owner', repo: 'repo', path: 'path/to/file.js'},
     'path.js#ref': {path: 'path.js', ref: 'ref'},
     'owner/repo:path.js#ref': {owner: 'owner', repo: 'repo', path: 'path.js', ref: 'ref'}
-  };
+  }
 
   Object.keys(cases).forEach(path => {
     it(path, () => {
-      expect(url(path)).toEqual(cases[path]);
-    });
-  });
-});
+      expect(url(path)).toEqual(cases[path])
+    })
+  })
+})

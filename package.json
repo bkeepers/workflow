@@ -7,7 +7,7 @@
   "repository": "https://github.com/probot/workflow",
   "scripts": {
     "start": "probot run ./index.js",
-    "test": "mocha && xo"
+    "test": "mocha && standard"
   },
   "dependencies": {
     "handlebars": "^4.0.6",
@@ -18,20 +18,13 @@
     "npm": ">= 4.0.0"
   },
   "devDependencies": {
+    "eslint-plugin-markdown": "^1.0.0-beta.6",
     "expect": "^1.20.2",
     "mocha": "^3.2.0",
-    "xo": "^0.17.1"
+    "standard": "^10.0.3"
   },
-  "xo": {
-    "esnext": true,
-    "space": true,
-    "rules": {
-      "camelcase": 1,
-      "no-else-return": 0,
-      "key-spacing": 0
-    },
-    "envs": [
-      "node",
+  "standard": {
+    "env": [
       "mocha"
     ],
     "globals": [
@@ -39,19 +32,8 @@
       "include",
       "contents"
     ],
-    "overrides": [
-      {
-        "files": "test/**/*.js",
-        "rules": {
-          "max-nested-callbacks": "off"
-        }
-      },
-      {
-        "files": "lib/plugins/projects.js",
-        "rules": {
-          "camelcase": "off"
-        }
-      }
+    "plugins": [
+      "markdown"
     ]
   }
 }
