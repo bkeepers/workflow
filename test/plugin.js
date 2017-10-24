@@ -1,4 +1,3 @@
-const expect = require('expect')
 const Plugin = require('../lib/plugin')
 
 class TestPlugin extends Plugin {

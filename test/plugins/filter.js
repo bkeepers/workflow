@@ -1,18 +1,17 @@
-const expect = require('expect')
 const Filter = require('../../lib/plugins/filter')
 
-const createSpy = expect.createSpy
+const createSpy = jest.fn
 
 describe('filter plugin', () => {
   const event = {}
   const context = {
     event,
-    halt: createSpy().andReturn(Promise.reject(new Error('halted')))
+    halt: createSpy().mockReturnValue(Promise.reject(new Error('halted')))
   }
 
   let filter
 
-  before(() => {
+  beforeEach(() => {
     filter = new Filter()
   })
 
@@ -25,13 +24,13 @@ describe('filter plugin', () => {
     })
 
     it('returns true if the function does', () => {
-      const fn = createSpy().andReturn(true)
+      const fn = createSpy().mockReturnValue(true)
 
       expect(filter.filter(context, fn)).toBe(true)
     })
 
     it('returns a rejected promise if the function returns false', () => {
-      const fn = createSpy().andReturn(false)
+      const fn = createSpy().mockReturnValue(false)
 
       return filter.filter(context, fn).catch(err => {
         expect(err.message).toEqual('halted')
@@ -48,7 +47,7 @@ describe('filter plugin', () => {
     })
 
     it('returns whatever the function does', () => {
-      const fn = createSpy().andReturn('bazinga!')
+      const fn = createSpy().mockReturnValue('bazinga!')
 
       expect(filter.then(context, fn)).toBe('bazinga!')
     })

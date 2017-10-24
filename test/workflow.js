@@ -1,4 +1,3 @@
-const expect = require('expect')
 const Plugin = require('../lib/plugin')
 const Workflow = require('../lib/workflow')
 
@@ -35,7 +34,7 @@ describe('Workflow', () => {
 
   describe('construction', () => {
     it('adds the plugins distinctiveness to its own', () => {
-      expect(workflow.api.test).toExist()
+      expect(workflow.api.test).toBeDefined()
     })
 
     it('returns a reference to the API for chaining when the test function is called', () => {
@@ -96,7 +95,7 @@ describe('Workflow', () => {
       }, err => {
         expect(err.message).toBe('HALT AND CATCH FIRE!!!')
         expect(context.bar).toBe('baz')
-        expect(context.baz).toNotExist()
+        expect(context.baz).toBeUndefined()
       })
     })
 
@@ -108,7 +107,7 @@ describe('Workflow', () => {
       }, err => {
         expect(err.message).toBe('Nothing to see here, move along')
         expect(context.bar).toBe('baz')
-        expect(context.baz).toNotExist()
+        expect(context.baz).toBeUndefined()
       })
     })
   })
