@@ -1,10 +1,9 @@
-const expect = require('expect')
 const Configuration = require('../lib/configuration')
 const Context = require('../lib/context')
 const content = require('./fixtures/content/probot.json')
 const payload = require('./fixtures/webhook/comment.created')
 
-const createSpy = expect.createSpy
+const createSpy = jest.fn
 
 content.content = Buffer.from(`
   on("issues.opened")
@@ -24,7 +23,7 @@ describe('Configuration', () => {
     beforeEach(() => {
       github = {
         repos: {
-          getContent: createSpy().andReturn(Promise.resolve(content))
+          getContent: createSpy().mockReturnValue(Promise.resolve(content))
         }
       }
       context = new Context(github, {payload})

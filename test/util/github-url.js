@@ -1,4 +1,3 @@
-const expect = require('expect')
 const url = require('../../lib/util/github-url')
 
 describe('github-url', () => {

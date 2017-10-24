@@ -1,9 +1,8 @@
-const expect = require('expect')
 const Configuration = require('../lib/configuration')
 const Context = require('../lib/context')
 const payload = require('./fixtures/webhook/comment.created.json')
 
-const createSpy = expect.createSpy
+const createSpy = jest.fn
 
 describe('integration', () => {
   const event = {event: 'issues', payload}
@@ -13,8 +12,8 @@ describe('integration', () => {
   beforeEach(() => {
     github = {
       issues: {
-        createComment: createSpy().andReturn(Promise.resolve()),
-        edit: createSpy().andReturn(Promise.resolve())
+        createComment: createSpy().mockReturnValue(Promise.resolve()),
+        edit: createSpy().mockReturnValue(Promise.resolve())
       },
       repos: {
         getContent: createSpy()
@@ -42,7 +41,7 @@ describe('integration', () => {
       const config = configure('on("issues.labeled").comment("Hello World!")')
 
       return config.execute(context).catch(() => {
-        expect(github.issues.createComment).toNotHaveBeenCalled()
+        expect(github.issues.createComment).toHaveBeenCalledTimes(0)
       })
     })
   })
@@ -66,7 +65,7 @@ describe('integration', () => {
       const config = configure('on("issues.labeled").filter((e) => e.payload.label.name == "foobar").close()')
 
       return config.execute(context).catch(() => {
-        expect(github.issues.edit).toNotHaveBeenCalled()
+        expect(github.issues.edit).toHaveBeenCalledTimes(0)
       })
     })
   })
@@ -78,7 +77,7 @@ describe('integration', () => {
       content = require('./fixtures/content/probot.json')
 
       content.content = Buffer.from('on("issues").comment("Hello!");').toString('base64')
-      github.repos.getContent.andReturn(Promise.resolve(content))
+      github.repos.getContent.mockReturnValue(Promise.resolve(content))
 
       context = new Context(github, event)
     })
@@ -100,7 +99,7 @@ describe('integration', () => {
     })
 
     it('includes files relative to included repository', () => {
-      github.repos.getContent.andCall(params => {
+      github.repos.getContent.mockImplementation(params => {
         if (params.path === 'script-a.js') {
           return Promise.resolve({
             content: Buffer.from('include("script-b.js")').toString('base64')
@@ -125,7 +124,7 @@ describe('integration', () => {
   describe('contents', () => {
     it('gets content from repo', () => {
       const content = {content: Buffer.from('file contents').toString('base64')}
-      github.repos.getContent.andReturn(Promise.resolve(content))
+      github.repos.getContent.mockReturnValue(Promise.resolve(content))
 
       const config = configure(`
         on("issues").comment(contents(".github/ISSUE_REPLY_TEMPLATE"));
@@ -142,7 +141,7 @@ describe('integration', () => {
     })
 
     it('gets contents relative to included repository', () => {
-      github.repos.getContent.andCall(params => {
+      github.repos.getContent.mockImplementation(params => {
         if (params.path === 'script-a.js') {
           return Promise.resolve({
             content: Buffer.from(`

@@ -1,4 +1,3 @@
-const expect = require('expect')
 const Context = require('../lib/context')
 
 describe('Context', () => {

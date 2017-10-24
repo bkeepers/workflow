@@ -7,7 +7,7 @@
   "repository": "https://github.com/probot/workflow",
   "scripts": {
     "start": "probot run ./index.js",
-    "test": "mocha && standard"
+    "test": "jest && standard"
   },
   "dependencies": {
     "handlebars": "^4.0.6",
@@ -19,13 +19,19 @@
   },
   "devDependencies": {
     "eslint-plugin-markdown": "^1.0.0-beta.6",
-    "expect": "^1.20.2",
-    "mocha": "^3.2.0",
+    "jest": "^21.2.1",
     "standard": "^10.0.3"
+  },
+  "jest": {
+    "testMatch": [ "**/test/**/*.js?(x)", "**/?(*.)(spec|test).js?(x)" ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/test/fixtures/",
+      "<rootDir>/test/setup.js"
+    ]
   },
   "standard": {
     "env": [
-      "mocha"
+      "jest"
     ],
     "globals": [
       "on",

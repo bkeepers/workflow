@@ -1,15 +1,15 @@
-const expect = require('expect')
+
 const Projects = require('../../lib/plugins/projects')
 const Context = require('../../lib/context')
 const payload = require('../fixtures/webhook/issue.created.json')
 
-const createSpy = expect.createSpy
+const createSpy = jest.fn
 
 describe('projects plugin', () => {
   let context
   let github
 
-  before(() => {
+  beforeEach(() => {
     github = {
       projects: {
         createProjectCard: createSpy(),
