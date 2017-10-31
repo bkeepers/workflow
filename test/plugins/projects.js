@@ -1,30 +1,30 @@
-
 const Projects = require('../../lib/plugins/projects')
-const Context = require('../../lib/context')
 const payload = require('../fixtures/webhook/issue.created.json')
 
 const createSpy = jest.fn
 
 describe('projects plugin', () => {
   let context
-  let github
+  let projects
 
   beforeEach(() => {
-    github = {
-      projects: {
-        createProjectCard: createSpy(),
-        getProjectColumns: createSpy(),
-        getRepoProjects: createSpy()
+    context = {
+      payload,
+      github: {
+        projects: {
+          createProjectCard: createSpy(),
+          getProjectColumns: createSpy().mockReturnValue(Promise.resolve([require('../fixtures/projects')])),
+          getRepoProjects: createSpy().mockReturnValue(Promise.resolve([require('../fixtures/projects')]))
+        }
       }
     }
-    context = new Context(github, {payload})
-    this.projects = new Projects()
+    projects = new Projects()
   })
 
   describe('createCard', () => {
     it('creates a project card', () => {
-      this.projects.createCard(context, {project: 'myProject', column: 'New'}).then(() => {
-        expect(github.projects.getRepoProjects).toHaveBeenCalledWith({
+      projects.createCard(context, {project: 'myProject', column: 'New'}).then(() => {
+        expect(context.github.projects.getRepoProjects).toHaveBeenCalledWith({
           owner: 'pholleran',
           repo: 'test'
         })

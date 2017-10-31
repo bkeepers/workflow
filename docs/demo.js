@@ -1,12 +1,12 @@
 // Delete :+1: comments
 const singleEmoji = /^\W*(:[\w-+]+:|[\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])\W*$/g
 on('issue_comment.created')
-  .filter(event => event.payload.comment.body.match(singleEmoji))
+  .filter(context => context.payload.comment.body.match(singleEmoji))
   .deleteComment()
 
-function isDeleted (event) {
-  return event.payload.action === 'deleted' &&
-  event.payload.sender.type !== 'Bot'
+function isDeleted (context) {
+  return context.payload.action === 'deleted' &&
+    context.payload.sender.type !== 'Bot'
 }
 
 // Restore deleted comments but the one deleted by PRobot

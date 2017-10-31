@@ -1,26 +1,27 @@
 const Configuration = require('../lib/configuration')
-const Context = require('../lib/context')
 const payload = require('./fixtures/webhook/comment.created.json')
 
 const createSpy = jest.fn
 
 describe('integration', () => {
-  const event = {event: 'issues', payload}
   let context
-  let github
 
   beforeEach(() => {
-    github = {
-      issues: {
-        createComment: createSpy().mockReturnValue(Promise.resolve()),
-        edit: createSpy().mockReturnValue(Promise.resolve())
+    context = {
+      event: 'issues',
+      payload,
+      github: {
+        issues: {
+          createComment: createSpy().mockReturnValue(Promise.resolve()),
+          edit: createSpy().mockReturnValue(Promise.resolve())
+        },
+        repos: {
+          getContent: createSpy()
+        }
       },
-      repos: {
-        getContent: createSpy()
-      }
+      issue: createSpy().mockImplementation(args => args),
+      repo: createSpy().mockImplementation(args => args)
     }
-
-    context = new Context(github, event)
   })
 
   function configure (content) {
@@ -31,7 +32,7 @@ describe('integration', () => {
     it('posts a coment', () => {
       const config = configure('on("issues").comment("Hello World!")')
       return config.execute(context).then(() => {
-        expect(github.issues.createComment).toHaveBeenCalled()
+        expect(context.github.issues.createComment).toHaveBeenCalled()
       })
     })
   })
@@ -41,23 +42,22 @@ describe('integration', () => {
       const config = configure('on("issues.labeled").comment("Hello World!")')
 
       return config.execute(context).catch(() => {
-        expect(github.issues.createComment).toHaveBeenCalledTimes(0)
+        expect(context.github.issues.createComment).toHaveBeenCalledTimes(0)
       })
     })
   })
 
   describe('filter', () => {
     beforeEach(() => {
-      const labeled = require('./fixtures/webhook/issues.labeled.json')
+      const payload = require('./fixtures/webhook/issues.labeled.json')
 
-      const event = {event: 'issues', payload: labeled, issue: {}}
-      context = new Context(github, event)
+      Object.assign(context, {event: 'issues', payload})
     })
 
     it('calls action when condition matches', () => {
       const config = configure('on("issues.labeled").filter((e) => e.payload.label.name == "bug").close()')
       return config.execute(context).then(() => {
-        expect(github.issues.edit).toHaveBeenCalled()
+        expect(context.github.issues.edit).toHaveBeenCalled()
       })
     })
 
@@ -65,7 +65,7 @@ describe('integration', () => {
       const config = configure('on("issues.labeled").filter((e) => e.payload.label.name == "foobar").close()')
 
       return config.execute(context).catch(() => {
-        expect(github.issues.edit).toHaveBeenCalledTimes(0)
+        expect(context.github.issues.edit).toHaveBeenCalledTimes(0)
       })
     })
   })
@@ -77,29 +77,25 @@ describe('integration', () => {
       content = require('./fixtures/content/probot.json')
 
       content.content = Buffer.from('on("issues").comment("Hello!");').toString('base64')
-      github.repos.getContent.mockReturnValue(Promise.resolve(content))
-
-      context = new Context(github, event)
+      context.github.repos.getContent.mockReturnValue(Promise.resolve(content))
     })
 
     it('includes a file in the local repository', () => {
       configure('include(".github/triage.js");')
-      expect(github.repos.getContent).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
+      expect(context.github.repos.getContent).toHaveBeenCalledWith({
         path: '.github/triage.js'
       })
     })
 
     it('executes included rules', done => {
       configure('include(".github/triage.js");').execute().then(() => {
-        expect(github.issues.createComment).toHaveBeenCalled()
+        expect(context.github.issues.createComment).toHaveBeenCalled()
         done()
       })
     })
 
     it('includes files relative to included repository', () => {
-      github.repos.getContent.mockImplementation(params => {
+      context.github.repos.getContent.mockImplementation(params => {
         if (params.path === 'script-a.js') {
           return Promise.resolve({
             content: Buffer.from('include("script-b.js")').toString('base64')
@@ -112,7 +108,7 @@ describe('integration', () => {
       const config = configure('include("other/repo:script-a.js");')
 
       return config.execute().then(() => {
-        expect(github.repos.getContent).toHaveBeenCalledWith({
+        expect(context.github.repos.getContent).toHaveBeenCalledWith({
           owner: 'other',
           repo: 'repo',
           path: 'script-b.js'
@@ -124,24 +120,21 @@ describe('integration', () => {
   describe('contents', () => {
     it('gets content from repo', () => {
       const content = {content: Buffer.from('file contents').toString('base64')}
-      github.repos.getContent.mockReturnValue(Promise.resolve(content))
+      context.github.repos.getContent.mockReturnValue(Promise.resolve(content))
 
       const config = configure(`
         on("issues").comment(contents(".github/ISSUE_REPLY_TEMPLATE"));
       `)
 
       return config.execute().then(() => {
-        expect(github.issues.createComment).toHaveBeenCalledWith({
-          owner: 'bkeepers-inc',
-          repo: 'test',
-          number: event.payload.issue.number,
+        expect(context.github.issues.createComment).toHaveBeenCalledWith({
           body: 'file contents'
         })
       })
     })
 
     it('gets contents relative to included repository', () => {
-      github.repos.getContent.mockImplementation(params => {
+      context.github.repos.getContent.mockImplementation(params => {
         if (params.path === 'script-a.js') {
           return Promise.resolve({
             content: Buffer.from(`
@@ -156,7 +149,7 @@ describe('integration', () => {
       const config = configure('include("other/repo:script-a.js");')
 
       return config.execute().then(() => {
-        expect(github.repos.getContent).toHaveBeenCalledWith({
+        expect(context.github.repos.getContent).toHaveBeenCalledWith({
           owner: 'other',
           repo: 'repo',
           path: 'content.md'

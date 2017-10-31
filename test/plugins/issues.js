@@ -1,78 +1,68 @@
 const Issues = require('../../lib/plugins/issues')
-const Context = require('../../lib/context')
 const payload = require('../fixtures/webhook/comment.created.json')
 
 const createSpy = jest.fn
 
 describe('issues plugin', () => {
   let context
-  let github
+  let issues
 
   beforeEach(() => {
-    github = {
-      issues: {
-        lock: createSpy(),
-        unlock: createSpy(),
-        edit: createSpy(),
-        addLabels: createSpy(),
-        createComment: createSpy(),
-        addAssigneesToIssue: createSpy(),
-        removeAssigneesFromIssue: createSpy(),
-        removeLabel: createSpy(),
-        deleteComment: createSpy(),
-        create: createSpy()
+    context = {
+      payload,
+      github: {
+        issues: {
+          lock: createSpy(),
+          unlock: createSpy(),
+          edit: createSpy(),
+          addLabels: createSpy(),
+          createComment: createSpy(),
+          addAssigneesToIssue: createSpy(),
+          removeAssigneesFromIssue: createSpy(),
+          removeLabel: createSpy(),
+          deleteComment: createSpy(),
+          create: createSpy()
+        },
+        repos: {
+          deleteCommitComment: createSpy()
+        },
+        pullRequests: {
+          deleteComment: createSpy()
+        }
       },
-      repos: {
-        deleteCommitComment: createSpy()
-      },
-      pullRequests: {
-        deleteComment: createSpy()
-      }
+      issue: createSpy().mockImplementation(args => args),
+      repo: createSpy().mockImplementation(args => args)
     }
-    context = new Context(github, {payload})
-    this.issues = new Issues()
+    issues = new Issues()
   })
 
   describe('locking', () => {
     it('locks', () => {
-      this.issues.lock(context)
+      issues.lock(context)
 
-      expect(github.issues.lock).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6
-      })
+      expect(context.github.issues.lock).toHaveBeenCalledWith({})
     })
 
     it('unlocks', () => {
-      this.issues.unlock(context)
+      issues.unlock(context)
 
-      expect(github.issues.unlock).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6
-      })
+      expect(context.github.issues.unlock).toHaveBeenCalledWith({})
     })
   })
 
   describe('state', () => {
     it('opens an issue', () => {
-      this.issues.open(context)
+      issues.open(context)
 
-      expect(github.issues.edit).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.edit).toHaveBeenCalledWith({
         state: 'open'
       })
     })
-    it('closes an issue', () => {
-      this.issues.close(context)
 
-      expect(github.issues.edit).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+    it('closes an issue', () => {
+      issues.close(context)
+
+      expect(context.github.issues.edit).toHaveBeenCalledWith({
         state: 'closed'
       })
     })
@@ -80,52 +70,37 @@ describe('issues plugin', () => {
 
   describe('labels', () => {
     it('adds a label', () => {
-      this.issues.label(context, 'hello')
+      issues.label(context, 'hello')
 
-      expect(github.issues.addLabels).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.addLabels).toHaveBeenCalledWith({
         body: ['hello']
       })
     })
 
     it('adds multiple labels', () => {
-      this.issues.label(context, 'hello', 'world')
+      issues.label(context, 'hello', 'world')
 
-      expect(github.issues.addLabels).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.addLabels).toHaveBeenCalledWith({
         body: ['hello', 'world']
       })
     })
 
     it('removes a single label', () => {
-      this.issues.unlabel(context, 'hello')
+      issues.unlabel(context, 'hello')
 
-      expect(github.issues.removeLabel).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.removeLabel).toHaveBeenCalledWith({
         name: 'hello'
       })
     })
 
     it('removes a multiple labels', () => {
-      this.issues.unlabel(context, 'hello', 'goodbye')
+      issues.unlabel(context, 'hello', 'goodbye')
 
-      expect(github.issues.removeLabel).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.removeLabel).toHaveBeenCalledWith({
         name: 'hello'
       })
 
-      expect(github.issues.removeLabel).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.removeLabel).toHaveBeenCalledWith({
         name: 'goodbye'
       })
     })
@@ -133,23 +108,17 @@ describe('issues plugin', () => {
 
   describe('comments', () => {
     it('creates a comment', () => {
-      this.issues.comment(context, 'Hello world!')
+      issues.comment(context, 'Hello world!')
 
-      expect(github.issues.createComment).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.createComment).toHaveBeenCalledWith({
         body: 'Hello world!'
       })
     })
 
     it('evaluates templates with handlebars', () => {
-      this.issues.comment(context, 'Hello @{{ sender.login }}!')
+      issues.comment(context, 'Hello @{{ sender.login }}!')
 
-      expect(github.issues.createComment).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.createComment).toHaveBeenCalledWith({
         body: 'Hello @bkeepers!'
       })
     })
@@ -157,45 +126,33 @@ describe('issues plugin', () => {
 
   describe('assignment', () => {
     it('assigns a user', () => {
-      this.issues.assign(context, 'bkeepers')
+      issues.assign(context, 'bkeepers')
 
-      expect(github.issues.addAssigneesToIssue).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.addAssigneesToIssue).toHaveBeenCalledWith({
         assignees: ['bkeepers']
       })
     })
 
     it('assigns multiple users', () => {
-      this.issues.assign(context, 'hello', 'world')
+      issues.assign(context, 'hello', 'world')
 
-      expect(github.issues.addAssigneesToIssue).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.addAssigneesToIssue).toHaveBeenCalledWith({
         assignees: ['hello', 'world']
       })
     })
 
     it('unassigns a user', () => {
-      this.issues.unassign(context, 'bkeepers')
+      issues.unassign(context, 'bkeepers')
 
-      expect(github.issues.removeAssigneesFromIssue).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.removeAssigneesFromIssue).toHaveBeenCalledWith({
         body: {assignees: ['bkeepers']}
       })
     })
 
     it('unassigns multiple users', () => {
-      this.issues.unassign(context, 'hello', 'world')
+      issues.unassign(context, 'hello', 'world')
 
-      expect(github.issues.removeAssigneesFromIssue).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
-        number: 6,
+      expect(context.github.issues.removeAssigneesFromIssue).toHaveBeenCalledWith({
         body: {assignees: ['hello', 'world']}
       })
     })
@@ -203,37 +160,29 @@ describe('issues plugin', () => {
 
   describe('deleteComment', () => {
     it('deletes an issue comment', () => {
-      this.issues.deleteComment(context)
+      issues.deleteComment(context)
 
-      expect(github.issues.deleteComment).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
+      expect(context.github.issues.deleteComment).toHaveBeenCalledWith({
         id: 252508381
       })
     })
 
     it('deletes a commit comment', () => {
-      const payload = require('../fixtures/webhook/commit_comment.created')
+      context.payload = require('../fixtures/webhook/commit_comment.created')
 
-      context = new Context(github, {payload})
-      this.issues.deleteComment(context)
+      issues.deleteComment(context)
 
-      expect(github.repos.deleteCommitComment).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
+      expect(context.github.repos.deleteCommitComment).toHaveBeenCalledWith({
         id: 20067099
       })
     })
 
     it('deletes a PR comment', () => {
-      const payload = require('../fixtures/webhook/pull_request_review_comment.created')
+      context.payload = require('../fixtures/webhook/pull_request_review_comment.created')
 
-      context = new Context(github, {payload})
-      this.issues.deleteComment(context)
+      issues.deleteComment(context)
 
-      expect(github.pullRequests.deleteComment).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
+      expect(context.github.pullRequests.deleteComment).toHaveBeenCalledWith({
         id: 90805181
       })
     })
@@ -241,10 +190,8 @@ describe('issues plugin', () => {
 
   describe('createIssue', () => {
     it('creates an issue', () => {
-      return this.issues.createIssue(context, {title: 'testing', body: 'body'}).then(() => {
-        expect(github.issues.create).toHaveBeenCalledWith({
-          owner: 'bkeepers-inc',
-          repo: 'test',
+      return issues.createIssue(context, {title: 'testing', body: 'body'}).then(() => {
+        expect(context.github.issues.create).toHaveBeenCalledWith({
           title: 'testing',
           body: 'body',
           assignees: undefined,
@@ -254,10 +201,8 @@ describe('issues plugin', () => {
     })
 
     it('resolves body content', () => {
-      return this.issues.createIssue(context, {title: 'testing', body: Promise.resolve('body')}).then(() => {
-        expect(github.issues.create).toHaveBeenCalledWith({
-          owner: 'bkeepers-inc',
-          repo: 'test',
+      return issues.createIssue(context, {title: 'testing', body: Promise.resolve('body')}).then(() => {
+        expect(context.github.issues.create).toHaveBeenCalledWith({
           title: 'testing',
           body: 'body',
           assignees: undefined,
@@ -267,10 +212,8 @@ describe('issues plugin', () => {
     })
 
     it('sets optional parameters', () => {
-      return this.issues.createIssue(context, {title: 'testing', body: 'body', assignees: ['bkeepers'], labels: ['hello']}).then(() => {
-        expect(github.issues.create).toHaveBeenCalledWith({
-          owner: 'bkeepers-inc',
-          repo: 'test',
+      return issues.createIssue(context, {title: 'testing', body: 'body', assignees: ['bkeepers'], labels: ['hello']}).then(() => {
+        expect(context.github.issues.create).toHaveBeenCalledWith({
           title: 'testing',
           body: 'body',
           assignees: ['bkeepers'],
