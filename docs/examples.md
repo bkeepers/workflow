@@ -15,9 +15,9 @@ Here are some examples of interesting things you can do by combining these compo
 // help you.
 
 on('issues.opened')
-  .filter(event => {
-      return !event.issue.body.match(/### Steps to Reproduce/)
-       || event.issue.body.includes('- [ ]')
+  .filter(context => {
+      return !context.issue.body.match(/### Steps to Reproduce/)
+       || context.issue.body.includes('- [ ]')
     })
   .comment(contents('.github/MISSING_ISSUE_TEMPLATE_AUTOREPLY.md'))
   .label('insufficient-info')
@@ -28,7 +28,7 @@ on('issues.opened')
 
 ```js
 on('issues.labeled')
-  .filter(event => event.payload.label.name === 'plugins')
+  .filter(context => context.payload.label.name === 'plugins')
   .comment('Hey @jekyll/plugins, the `plugins` label was added');
 ```
 
@@ -52,7 +52,7 @@ on('pull_request.opened')
 
 ```js
 on('issues.opened')
-  .filter(event => event.issue.body.match(/^$/))
+  .filter(context => context.issue.body.match(/^$/))
   .comment("Hey @{{ user.login }}, you didn't include a description of the problem, so we're closing this issue.");
 ```
 
@@ -68,7 +68,7 @@ on('*.labeled')
 
 ```js
 on('pull_request.labeled')
-  .filter(event => event.labeled(bug))
+  .filter(context => context.labeled(bug))
   .assign(random(file(OWNERS)));
 ```
 
@@ -76,11 +76,11 @@ on('pull_request.labeled')
 
 ```js
 on('issue_comment.opened')
-  .filter(event => event.issue.body.match(/^@probot assign @(\w+)$/))
+  .filter(context => context.issue.body.match(/^@probot assign @(\w+)$/))
   .assign(matches[0]);
 
 on('issue_comment.opened')
-  .filter(event => event.issue.body.match(/^@probot label @(\w+)$/))
+  .filter(context => context.issue.body.match(/^@probot label @(\w+)$/))
   .label($1);
 ```
 
