@@ -114,11 +114,26 @@ describe('app', () => {
         if (params.path === 'script-b.js') {
           return ''
         }
-        return 'include("other/repo:script-a.js");'
+        return `
+          include("other/repo:script-a.js");
+          include("another/repo:script-a.js");
+          include("script-b.js");
+        `
       })
+      expect(github.repos.getContent).toHaveBeenCalledTimes(1 + 3 + 2)
       expect(github.repos.getContent).toHaveBeenCalledWith({
         owner: 'other',
         repo: 'repo',
+        path: 'script-b.js'
+      })
+      expect(github.repos.getContent).toHaveBeenCalledWith({
+        owner: 'another',
+        repo: 'repo',
+        path: 'script-b.js'
+      })
+      expect(github.repos.getContent).toHaveBeenCalledWith({
+        owner: 'bkeepers-inc',
+        repo: 'test',
         path: 'script-b.js'
       })
     })
@@ -154,6 +169,29 @@ describe('app', () => {
         owner: 'other',
         repo: 'repo',
         path: 'content.md'
+      })
+    })
+
+    it('gets contents relative to included repository', async () => {
+      await configure(params => {
+        if (params.path === 'content.md' || params.path === 'label.md') {
+          return ''
+        }
+        return `
+          on("issues")
+            .comment(contents("other/repo:content.md"))
+            .comment(contents("label.md"));
+        `
+      })
+      expect(github.repos.getContent).toHaveBeenCalledWith({
+        owner: 'other',
+        repo: 'repo',
+        path: 'content.md'
+      })
+      expect(github.repos.getContent).toHaveBeenCalledWith({
+        owner: 'bkeepers-inc',
+        repo: 'test',
+        path: 'label.md'
       })
     })
   })
