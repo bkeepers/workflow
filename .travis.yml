@@ -1,5 +1,10 @@
 language: node_js
 node_js:
-  - "8"
+  - "node"
+
+cache:
+  directories:
+    - node_modules
+
 notifications:
   disabled: true
