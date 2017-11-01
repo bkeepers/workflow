@@ -1,6 +1,6 @@
 # Configuration
 
-Workflows are configured in a file called `.probot.js` in your repository.
+Workflows are configured in a file called `.github/probot.js` in your repository.
 
 ```js
 // Auto-respond to new issues and pull requests

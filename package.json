@@ -1,7 +1,7 @@
 {
   "name": "probot-workflow",
   "version": "1.0.0",
-  "description": "workflow automation via `.probot.js` file in your repository",
+  "description": "workflow automation",
   "license": "ISC",
   "author": "Brandon Keepers",
   "repository": "https://github.com/probot/workflow",
