@@ -39,7 +39,7 @@ describe('filter plugin', () => {
   describe('then', () => {
     it('passes the context object to the supplied function', () => {
       const fn = createSpy()
-      filter.filter(context, fn)
+      filter.filter(context, fn).catch(() => {})
 
       expect(fn).toHaveBeenCalledWith(context)
     })
