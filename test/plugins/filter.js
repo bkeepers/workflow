@@ -1,4 +1,5 @@
 const Filter = require('../../lib/plugins/filter')
+const HaltedError = require('../../lib/errors/halted')
 
 const createSpy = jest.fn
 
@@ -31,7 +32,8 @@ describe('filter plugin', () => {
       const fn = createSpy().mockReturnValue(false)
 
       return filter.filter(context, fn).catch(err => {
-        expect(err.message).toEqual('halted')
+        expect(err).toBeInstanceOf(HaltedError)
+        expect(err.message).toEqual('Filter have rejected the event')
       })
     })
   })
@@ -65,7 +67,8 @@ describe('filter plugin', () => {
         context.event = 'issues'
 
         return filter.on(context, 'foo').catch(err => {
-          expect(err.message).toBe('halted')
+          expect(err).toBeInstanceOf(HaltedError)
+          expect(err.message).toBe('Current event does not match')
         })
       })
 
@@ -81,7 +84,8 @@ describe('filter plugin', () => {
         context.event = 'bar'
 
         return filter.on(context, 'issues', 'foo').catch(err => {
-          expect(err.message).toBe('halted')
+          expect(err).toBeInstanceOf(HaltedError)
+          expect(err.message).toBe('Current event does not match')
         })
       })
     })
@@ -101,7 +105,8 @@ describe('filter plugin', () => {
         context.payload = {action: 'foo'}
 
         return filter.on(context, 'issues.opened').catch(err => {
-          expect(err.message).toBe('halted')
+          expect(err).toBeInstanceOf(HaltedError)
+          expect(err.message).toBe('Current event does not match')
         })
       })
 
@@ -119,7 +124,8 @@ describe('filter plugin', () => {
         context.payload = {action: 'foo'}
 
         return filter.on(context, 'issues.opened', 'issues.closed').catch(err => {
-          expect(err.message).toBe('halted')
+          expect(err).toBeInstanceOf(HaltedError)
+          expect(err.message).toBe('Current event does not match')
         })
       })
     })
