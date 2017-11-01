@@ -172,7 +172,7 @@ describe('app', () => {
       })
     })
 
-    it('gets contents relative to included repository', async () => {
+    it('gets multiple contents without mismatching source parameters', async () => {
       await configure(params => {
         if (params.path === 'content.md' || params.path === 'label.md') {
           return ''
