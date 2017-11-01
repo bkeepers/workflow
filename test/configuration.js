@@ -1,5 +1,4 @@
 const Configuration = require('../lib/configuration')
-const Context = require('../lib/context')
 const content = require('./fixtures/content/probot.json')
 const payload = require('./fixtures/webhook/comment.created')
 
@@ -16,25 +15,26 @@ content.content = Buffer.from(`
 
 describe('Configuration', () => {
   describe('include', () => {
-    let github
     let context
     let config
 
     beforeEach(() => {
-      github = {
-        repos: {
-          getContent: createSpy().mockReturnValue(Promise.resolve(content))
-        }
+      context = {
+        payload,
+        github: {
+          repos: {
+            getContent: createSpy().mockReturnValue(Promise.resolve(content))
+          }
+        },
+        issue: createSpy().mockImplementation(args => args),
+        repo: createSpy().mockImplementation(args => args)
       }
-      context = new Context(github, {payload})
       config = new Configuration(context)
     })
 
     it('includes from the repo', () => {
       config.include('foo.js')
-      expect(github.repos.getContent).toHaveBeenCalledWith({
-        owner: 'bkeepers-inc',
-        repo: 'test',
+      expect(context.github.repos.getContent).toHaveBeenCalledWith({
         path: 'foo.js'
       })
     })
@@ -45,7 +45,7 @@ describe('Configuration', () => {
 
     it('includes from another repository', () => {
       config.include('atom/configs:foo.js#branch')
-      expect(github.repos.getContent).toHaveBeenCalledWith({
+      expect(context.github.repos.getContent).toHaveBeenCalledWith({
         owner: 'atom',
         repo: 'configs',
         path: 'foo.js',
