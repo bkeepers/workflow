@@ -5,11 +5,10 @@ on('issue_comment.created')
   .deleteComment()
 
 function isDeleted (context) {
-  return context.payload.action === 'deleted' &&
-    context.payload.sender.type !== 'Bot'
+  return context.payload.action === 'deleted' && !context.isBot
 }
 
-// Restore deleted comments but the one deleted by PRobot
+// Restore deleted comments but the one deleted by Probot
 on('issue_comment', 'commit_comment', 'pull_request_review_comment')
   .filter(isDeleted)
   .comment(`
