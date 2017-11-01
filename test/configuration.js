@@ -4,14 +4,16 @@ const payload = require('./fixtures/webhook/comment.created')
 
 const createSpy = jest.fn
 
-content.content = Buffer.from(`
-  on("issues.opened")
-    .comment("Hello World!")
-    .assign("bkeepers");
-
-  on("issues.closed")
-    .unassign("bkeepers");
-`).toString('base64')
+content.data = {
+  content: Buffer.from(`
+    on("issues.opened")
+      .comment("Hello World!")
+      .assign("bkeepers");
+  
+    on("issues.closed")
+      .unassign("bkeepers");
+    `).toString('base64')
+}
 
 describe('Configuration', () => {
   describe('include', () => {
