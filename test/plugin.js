@@ -14,7 +14,7 @@ describe('Plugin', () => {
       expect(plugin.api.indexOf('foo') >= 0).toBe(true)
     })
 
-    it('exludes constructor', () => {
+    it('excludes constructor', () => {
       expect(plugin.api.indexOf('constructor')).toBe(-1)
     })
   })

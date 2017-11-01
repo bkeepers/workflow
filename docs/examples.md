@@ -69,7 +69,7 @@ on('*.labeled')
 ```js
 on('pull_request.labeled')
   .filter(context => context.labeled(bug))
-  .assign(random(file(OWNERS)));
+  .assign(random(contents('OWNERS')));
 ```
 
 ### Perform actions based on content of comments
