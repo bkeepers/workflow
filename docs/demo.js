@@ -4,15 +4,12 @@ on('issue_comment.created')
   .filter(context => context.payload.comment.body.match(singleEmoji))
   .deleteComment()
 
-function isDeleted (context) {
-  return context.payload.action === 'deleted' && !context.isBot
-}
-
 // Restore deleted comments but the one deleted by Probot
 on('issue_comment', 'commit_comment', 'pull_request_review_comment')
-  .filter(isDeleted)
+  .filter(context => context.payload.action === 'deleted' && context.isBot)
   .comment(`
 Deleted comment from @{{ comment.user.login }} at {{ comment.updated_at }}
+
 ---
 {{ comment.body }}
 `)

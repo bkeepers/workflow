@@ -15,10 +15,8 @@ Here are some examples of interesting things you can do by combining these compo
 // help you.
 
 on('issues.opened')
-  .filter(context => {
-      return !context.issue.body.match(/### Steps to Reproduce/)
-       || context.issue.body.includes('- [ ]')
-    })
+  .filter(context => !context.issue.body.match(/### Steps to Reproduce/)
+       || context.issue.body.includes('- [ ]'))
   .comment(contents('.github/MISSING_ISSUE_TEMPLATE_AUTOREPLY.md'))
   .label('insufficient-info')
   .close();
@@ -68,8 +66,8 @@ on('*.labeled')
 
 ```js
 on('pull_request.labeled')
-  .filter(context => context.labeled(bug))
-  .assign(random(contents('OWNERS')));
+  .filter(context => context.payload.label.name === 'bug')
+  .assign(random(contents('CODEOWNERS'))); // TODO: parser for CODEOWNERS
 ```
 
 ### Perform actions based on content of comments
@@ -87,7 +85,7 @@ on('issue_comment.opened')
 ### Close stale issues and pull requests
 
 ```js
-every('day')
+every('day') // TODO
   .find.issues({state: 'open', label: 'needs-work'})
   .filter.lastActive(7, 'days')
   .close();
@@ -97,6 +95,7 @@ every('day')
 
 ```js
 on('release.published')
+  // TODO
   .tweet("Get it while it's hot! {{ repository.name }} {{ release.name }} was just released! {{ release.html_url }}");
 ```
 
@@ -104,7 +103,7 @@ on('release.published')
 
 ```js
 on('issues.opened', 'pull_request.opened', 'issues.labeled', 'pull_request.labeled')
-  .filter.labeled('security')
+  .filter.labeled('security') // TODO
   .assign(team('security-first-responders').random());
 ```
 
