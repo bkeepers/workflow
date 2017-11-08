@@ -11,20 +11,23 @@
   },
   "dependencies": {
     "handlebars": "^4.0.6",
-    "probot": "^3.0.0"
+    "probot": "^3.0.2"
   },
   "engines": {
     "node": ">= 7.7.0",
     "npm": ">= 4.0.0"
   },
   "devDependencies": {
-    "eslint-plugin-markdown": "^1.0.0-beta.6",
+    "eslint-plugin-markdown": "^1.0.0-beta.7",
     "jest": "^21.2.1",
     "localtunnel": "^1.8.3",
     "standard": "^10.0.3"
   },
   "jest": {
-    "testMatch": [ "**/test/**/*.js?(x)", "**/?(*.)(spec|test).js?(x)" ],
+    "testMatch": [
+      "**/test/**/*.js?(x)",
+      "**/?(*.)(spec|test).js?(x)"
+    ],
     "modulePathIgnorePatterns": [
       "<rootDir>/test/fixtures/",
       "<rootDir>/test/setup.js"
