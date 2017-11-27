@@ -6,7 +6,7 @@ module.exports = robot => {
     const config = await Configuration.load(context, '.github/probot.js')
     return config.execute().catch(err => {
       if (err instanceof HaltedError) {
-        robot.log.info(err)
+        context.log.info(err)
       } else {
         throw err
       }
