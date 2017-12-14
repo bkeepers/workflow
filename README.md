@@ -1,5 +1,7 @@
 # Probot: Workflow
 
+[![Build Status](https://travis-ci.org/bkeepers/workflow.svg?branch=master)](https://travis-ci.org/bkeepers/workflow)
+
 > A GitHub App built with [probot](https://github.com/probot/probot) that enables complete workflow automation.
 
 ## Installing
