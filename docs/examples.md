@@ -15,8 +15,8 @@ Here are some examples of interesting things you can do by combining these compo
 // help you.
 
 on('issues.opened')
-  .filter(context => !context.issue.body.match(/### Steps to Reproduce/)
-       || context.issue.body.includes('- [ ]'))
+  .filter(context => !context.payload.issue.body.match(/### Steps to Reproduce/)
+       || context.payload.issue.body.includes('- [ ]'))
   .comment(contents('.github/MISSING_ISSUE_TEMPLATE_AUTOREPLY.md'))
   .label('insufficient-info')
   .close();
@@ -50,7 +50,7 @@ on('pull_request.opened')
 
 ```js
 on('issues.opened')
-  .filter(context => context.issue.body.match(/^$/))
+  .filter(context => context.payload.issue.body.match(/^$/))
   .comment("Hey @{{ user.login }}, you didn't include a description of the problem, so we're closing this issue.");
 ```
 
@@ -74,11 +74,11 @@ on('pull_request.labeled')
 
 ```js
 on('issue_comment.opened')
-  .filter(context => context.issue.body.match(/^@probot assign @(\w+)$/))
+  .filter(context => context.payload.issue.body.match(/^@probot assign @(\w+)$/))
   .assign(matches[0]);
 
 on('issue_comment.opened')
-  .filter(context => context.issue.body.match(/^@probot label @(\w+)$/))
+  .filter(context => context.payload.issue.body.match(/^@probot label @(\w+)$/))
   .label($1);
 ```
 
