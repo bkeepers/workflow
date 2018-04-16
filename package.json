@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "handlebars": "^4.0.6",
-    "probot": "^4.0.0"
+    "probot": "^6.1.0"
   },
   "engines": {
     "node": ">= 7.7.0",
@@ -19,9 +19,9 @@
   },
   "devDependencies": {
     "eslint-plugin-markdown": "^1.0.0-beta.7",
-    "jest": "^21.2.1",
+    "jest": "^22.4.3",
     "localtunnel": "^1.8.3",
-    "standard": "^10.0.3"
+    "standard": "^11.0.1"
   },
   "jest": {
     "testMatch": [
