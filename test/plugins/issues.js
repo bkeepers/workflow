@@ -73,7 +73,7 @@ describe('issues plugin', () => {
       issues.label(context, 'hello')
 
       expect(context.github.issues.addLabels).toHaveBeenCalledWith({
-        body: ['hello']
+        labels: ['hello']
       })
     })
 
@@ -81,7 +81,7 @@ describe('issues plugin', () => {
       issues.label(context, 'hello', 'world')
 
       expect(context.github.issues.addLabels).toHaveBeenCalledWith({
-        body: ['hello', 'world']
+        labels: ['hello', 'world']
       })
     })
 
