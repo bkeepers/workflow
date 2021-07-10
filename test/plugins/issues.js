@@ -40,13 +40,13 @@ describe('issues plugin', () => {
     it('locks', () => {
       issues.lock(context)
 
-      expect(context.github.issues.lock).toHaveBeenCalledWith({})
+      expect(context.octokit.issues.lock).toHaveBeenCalledWith({})
     })
 
     it('unlocks', () => {
       issues.unlock(context)
 
-      expect(context.github.issues.unlock).toHaveBeenCalledWith({})
+      expect(context.octokit.issues.unlock).toHaveBeenCalledWith({})
     })
   })
 
@@ -54,7 +54,7 @@ describe('issues plugin', () => {
     it('opens an issue', () => {
       issues.open(context)
 
-      expect(context.github.issues.edit).toHaveBeenCalledWith({
+      expect(context.octokit.issues.edit).toHaveBeenCalledWith({
         state: 'open'
       })
     })
@@ -62,7 +62,7 @@ describe('issues plugin', () => {
     it('closes an issue', () => {
       issues.close(context)
 
-      expect(context.github.issues.edit).toHaveBeenCalledWith({
+      expect(context.octokit.issues.edit).toHaveBeenCalledWith({
         state: 'closed'
       })
     })
@@ -72,7 +72,7 @@ describe('issues plugin', () => {
     it('adds a label', () => {
       issues.label(context, 'hello')
 
-      expect(context.github.issues.addLabels).toHaveBeenCalledWith({
+      expect(context.octokit.issues.addLabels).toHaveBeenCalledWith({
         labels: ['hello']
       })
     })
@@ -80,7 +80,7 @@ describe('issues plugin', () => {
     it('adds multiple labels', () => {
       issues.label(context, 'hello', 'world')
 
-      expect(context.github.issues.addLabels).toHaveBeenCalledWith({
+      expect(context.octokit.issues.addLabels).toHaveBeenCalledWith({
         labels: ['hello', 'world']
       })
     })
@@ -88,7 +88,7 @@ describe('issues plugin', () => {
     it('removes a single label', () => {
       issues.unlabel(context, 'hello')
 
-      expect(context.github.issues.removeLabel).toHaveBeenCalledWith({
+      expect(context.octokit.issues.removeLabel).toHaveBeenCalledWith({
         name: 'hello'
       })
     })
@@ -96,11 +96,11 @@ describe('issues plugin', () => {
     it('removes a multiple labels', () => {
       issues.unlabel(context, 'hello', 'goodbye')
 
-      expect(context.github.issues.removeLabel).toHaveBeenCalledWith({
+      expect(context.octokit.issues.removeLabel).toHaveBeenCalledWith({
         name: 'hello'
       })
 
-      expect(context.github.issues.removeLabel).toHaveBeenCalledWith({
+      expect(context.octokit.issues.removeLabel).toHaveBeenCalledWith({
         name: 'goodbye'
       })
     })
@@ -110,7 +110,7 @@ describe('issues plugin', () => {
     it('creates a comment', () => {
       issues.comment(context, 'Hello world!')
 
-      expect(context.github.issues.createComment).toHaveBeenCalledWith({
+      expect(context.octokit.issues.createComment).toHaveBeenCalledWith({
         body: 'Hello world!'
       })
     })
@@ -118,7 +118,7 @@ describe('issues plugin', () => {
     it('evaluates templates with handlebars', () => {
       issues.comment(context, 'Hello @{{ sender.login }}!')
 
-      expect(context.github.issues.createComment).toHaveBeenCalledWith({
+      expect(context.octokit.issues.createComment).toHaveBeenCalledWith({
         body: 'Hello @bkeepers!'
       })
     })
@@ -128,7 +128,7 @@ describe('issues plugin', () => {
     it('assigns a user', () => {
       issues.assign(context, 'bkeepers')
 
-      expect(context.github.issues.addAssigneesToIssue).toHaveBeenCalledWith({
+      expect(context.octokit.issues.addAssigneesToIssue).toHaveBeenCalledWith({
         assignees: ['bkeepers']
       })
     })
@@ -136,7 +136,7 @@ describe('issues plugin', () => {
     it('assigns multiple users', () => {
       issues.assign(context, 'hello', 'world')
 
-      expect(context.github.issues.addAssigneesToIssue).toHaveBeenCalledWith({
+      expect(context.octokit.issues.addAssigneesToIssue).toHaveBeenCalledWith({
         assignees: ['hello', 'world']
       })
     })
@@ -144,7 +144,7 @@ describe('issues plugin', () => {
     it('unassigns a user', () => {
       issues.unassign(context, 'bkeepers')
 
-      expect(context.github.issues.removeAssigneesFromIssue).toHaveBeenCalledWith({
+      expect(context.octokit.issues.removeAssigneesFromIssue).toHaveBeenCalledWith({
         body: {assignees: ['bkeepers']}
       })
     })
@@ -152,7 +152,7 @@ describe('issues plugin', () => {
     it('unassigns multiple users', () => {
       issues.unassign(context, 'hello', 'world')
 
-      expect(context.github.issues.removeAssigneesFromIssue).toHaveBeenCalledWith({
+      expect(context.octokit.issues.removeAssigneesFromIssue).toHaveBeenCalledWith({
         body: {assignees: ['hello', 'world']}
       })
     })
@@ -162,7 +162,7 @@ describe('issues plugin', () => {
     it('deletes an issue comment', () => {
       issues.deleteComment(context)
 
-      expect(context.github.issues.deleteComment).toHaveBeenCalledWith({
+      expect(context.octokit.issues.deleteComment).toHaveBeenCalledWith({
         id: 252508381
       })
     })
@@ -172,7 +172,7 @@ describe('issues plugin', () => {
 
       issues.deleteComment(context)
 
-      expect(context.github.repos.deleteCommitComment).toHaveBeenCalledWith({
+      expect(context.octokit.repos.deleteCommitComment).toHaveBeenCalledWith({
         id: 20067099
       })
     })
@@ -182,7 +182,7 @@ describe('issues plugin', () => {
 
       issues.deleteComment(context)
 
-      expect(context.github.pullRequests.deleteComment).toHaveBeenCalledWith({
+      expect(context.octokit.pullRequests.deleteComment).toHaveBeenCalledWith({
         id: 90805181
       })
     })
@@ -191,7 +191,7 @@ describe('issues plugin', () => {
   describe('createIssue', () => {
     it('creates an issue', () => {
       return issues.createIssue(context, {title: 'testing', body: 'body'}).then(() => {
-        expect(context.github.issues.create).toHaveBeenCalledWith({
+        expect(context.octokit.issues.create).toHaveBeenCalledWith({
           title: 'testing',
           body: 'body',
           assignees: undefined,
@@ -202,7 +202,7 @@ describe('issues plugin', () => {
 
     it('resolves body content', () => {
       return issues.createIssue(context, {title: 'testing', body: Promise.resolve('body')}).then(() => {
-        expect(context.github.issues.create).toHaveBeenCalledWith({
+        expect(context.octokit.issues.create).toHaveBeenCalledWith({
           title: 'testing',
           body: 'body',
           assignees: undefined,
@@ -213,7 +213,7 @@ describe('issues plugin', () => {
 
     it('sets optional parameters', () => {
       return issues.createIssue(context, {title: 'testing', body: 'body', assignees: ['bkeepers'], labels: ['hello']}).then(() => {
-        expect(context.github.issues.create).toHaveBeenCalledWith({
+        expect(context.octokit.issues.create).toHaveBeenCalledWith({
           title: 'testing',
           body: 'body',
           assignees: ['bkeepers'],

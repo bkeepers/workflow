@@ -36,7 +36,7 @@ describe('Configuration', () => {
 
     it('includes from the repo', () => {
       config.include('foo.js')
-      expect(context.github.repos.getContent).toHaveBeenCalledWith({
+      expect(context.octokit.repos.getContent).toHaveBeenCalledWith({
         path: 'foo.js'
       })
     })
@@ -47,7 +47,7 @@ describe('Configuration', () => {
 
     it('includes from another repository', () => {
       config.include('atom/configs:foo.js#branch')
-      expect(context.github.repos.getContent).toHaveBeenCalledWith({
+      expect(context.octokit.repos.getContent).toHaveBeenCalledWith({
         owner: 'atom',
         repo: 'configs',
         path: 'foo.js',
