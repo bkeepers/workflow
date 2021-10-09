@@ -68,7 +68,7 @@ describe('app', () => {
           .filter((e) => e.payload.label.name == "bug")
           .close();
         `, context)
-      expect(github.issues.edit).toHaveBeenCalled()
+      expect(github.issues.update).toHaveBeenCalled()
     })
 
     it('does not call action when conditions do not match', async () => {
@@ -77,7 +77,7 @@ describe('app', () => {
           .filter((e) => e.payload.label.name == "foobar")
           .close();
         `, context)
-      expect(github.issues.edit).toHaveBeenCalledTimes(0)
+      expect(github.issues.update).toHaveBeenCalledTimes(0)
     })
   })
 

@@ -54,7 +54,7 @@ describe('issues plugin', () => {
     it('opens an issue', () => {
       issues.open(context)
 
-      expect(context.octokit.issues.edit).toHaveBeenCalledWith({
+      expect(context.octokit.issues.update).toHaveBeenCalledWith({
         state: 'open'
       })
     })
@@ -62,7 +62,7 @@ describe('issues plugin', () => {
     it('closes an issue', () => {
       issues.close(context)
 
-      expect(context.octokit.issues.edit).toHaveBeenCalledWith({
+      expect(context.octokit.issues.update).toHaveBeenCalledWith({
         state: 'closed'
       })
     })
